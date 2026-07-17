@@ -13,8 +13,8 @@
 
    PHASE STATUS
      [x] Phase 1  file created, tokens outline
-     [x] Phase 2  banner desktop (current)
-     [ ] Phase 3  banner responsive + button animation
+     [x] Phase 2  banner desktop
+     [x] Phase 3  banner responsive + button animation (current)
      [ ] Phase 4  grid desktop
      [ ] Phase 5  popup
      [ ] Phase 9  full responsive pass
@@ -145,6 +145,7 @@
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .gg-btn--yellow {
@@ -163,8 +164,119 @@
   flex: none;
   width: 34px;
   height: 12px;
+  transition: transform 0.3s ease;
+}
+
+/* Hover/focus: arrow slides right; buttons invert (dark -> yellow matches the
+   Figma hover frame). Also covers keyboard focus for accessibility. */
+.gg-btn:hover .gg-arrow,
+.gg-btn:focus-visible .gg-arrow {
+  transform: translateX(6px);
+}
+
+.gg-btn--dark:hover,
+.gg-btn--dark:focus-visible {
+  background: var(--gg-yellow);
+  color: var(--gg-black);
+}
+
+.gg-btn--yellow:hover,
+.gg-btn--yellow:focus-visible {
+  background: var(--gg-black);
+  color: var(--gg-white);
+}
+
+.gg-btn:focus-visible {
+  outline: 2px solid var(--gg-black);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-btn,
+  .gg-arrow {
+    transition: none;
+  }
+  .gg-btn:hover .gg-arrow,
+  .gg-btn:focus-visible .gg-arrow {
+    transform: none;
+  }
 }
 
 /* 3. Grid ---------------------------------------------------------------- */
 /* 4. Popup --------------------------------------------------------------- */
+
 /* 5. Responsive ---------------------------------------------------------- */
+/* Tablet (<=989px): keep the desktop overlay, just ease the scale so the
+   heading never collides with the illustration on the right. */
+@media (max-width: 989px) {
+  .gg-banner {
+    --gg-inset: 40px;
+  }
+  .gg-banner__heading {
+    font-size: 56px;
+  }
+  .gg-banner__content {
+    max-width: 56%;
+  }
+}
+
+/* Mobile (<=749px, 375px baseline): the wide illustration can't host the
+   heading at phone width, so the hero switches from overlay to a vertical
+   stack — illustration on top, content below on white. */
+@media (max-width: 749px) {
+  /* Utility bar: logo + button share row one; tagline drops to a centered
+     second row so nothing is hidden or truncated. */
+  .gg-banner__utility {
+    flex-wrap: wrap;
+    padding: 12px 18px;
+    row-gap: 8px;
+  }
+  .gg-banner__logo {
+    order: 1;
+    font-size: 14px;
+  }
+  .gg-btn--yellow {
+    order: 2;
+    padding: 9px 16px;
+    font-size: 12px;
+  }
+  .gg-banner__tagline {
+    position: static;
+    transform: none;
+    order: 3;
+    flex-basis: 100%;
+    text-align: center;
+    white-space: normal;
+    font-size: 12px;
+  }
+
+  /* Hero: stack (DOM order is illustration -> content). */
+  .gg-banner__hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .gg-banner__content {
+    position: static;
+    inset: auto;
+    max-width: none;
+    width: 100%;
+    padding: 34px 24px 40px;
+  }
+  .gg-banner__heading {
+    font-size: 40px;
+    margin-bottom: 18px;
+  }
+  .gg-banner__desc {
+    max-width: none;
+    margin-bottom: 26px;
+    font-size: 15px;
+  }
+  .gg-btn--dark {
+    padding: 15px 26px;
+  }
+
+  .gg-banner__footer {
+    padding: 12px 18px;
+    text-align: center;
+  }
+}

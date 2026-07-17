@@ -11,20 +11,79 @@
   below so a merchant can edit it from the Theme Editor without touching code.
 
   PHASE STATUS
-    [x] Phase 1  scaffold + schema (this file, current)
-    [ ] Phase 2  desktop markup, pixel-perfect @1440
+    [x] Phase 1  scaffold + schema
+    [x] Phase 2  desktop markup, pixel-perfect @1440 (this file, current)
     [ ] Phase 3  responsive @375 + button animation
   ============================================================================
 {%- endcomment -%}
 
 {{ 'gift-guide.css' | asset_url | stylesheet_tag }}
 
-<section
-  class="gift-guide-banner"
-  data-gift-guide-banner
-  aria-label="{{ section.settings.heading | escape }}"
->
-  {%- comment -%} TODO Phase 2: utility bar / hero / footer bar markup. {%- endcomment -%}
+{%- liquid
+  assign s = section.settings
+  # Reusable long-arrow used by both buttons.
+  capture arrow
+    echo '<svg class="gg-arrow" viewBox="0 0 42 14" fill="none" aria-hidden="true" focusable="false"><path d="M0 7h39M33 1l7 6-7 6" stroke="currentColor" stroke-width="1.4"/></svg>'
+  endcapture
+-%}
+
+<section class="gg-banner" data-gift-guide-banner>
+  {%- comment -%} Utility bar: logo, tagline, "choose gift" button. {%- endcomment -%}
+  <div class="gg-banner__utility">
+    {%- if s.logo_text != blank -%}
+      <span class="gg-banner__logo">{{ s.logo_text }}</span>
+    {%- endif -%}
+
+    {%- if s.topbar_text != blank -%}
+      <p class="gg-banner__tagline">{{ s.topbar_text }}</p>
+    {%- endif -%}
+
+    {%- if s.topbar_button_label != blank -%}
+      <a class="gg-btn gg-btn--yellow" href="{{ s.topbar_button_link | default: '#' }}">
+        <span>{{ s.topbar_button_label }}</span>
+        {{ arrow }}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Hero: illustration background with content overlaid on the left. {%- endcomment -%}
+  <div class="gg-banner__hero">
+    {%- if s.background_image != blank -%}
+      <img
+        class="gg-banner__illustration"
+        src="{{ s.background_image | image_url: width: 2000 }}"
+        alt="{{ s.background_image.alt | escape }}"
+        width="{{ s.background_image.width }}"
+        height="{{ s.background_image.height }}"
+        loading="eager"
+        fetchpriority="high"
+      >
+    {%- endif -%}
+
+    <div class="gg-banner__content">
+      {%- if s.heading != blank -%}
+        <h1 class="gg-banner__heading">{{ s.heading }}</h1>
+      {%- endif -%}
+
+      {%- if s.description != blank -%}
+        <div class="gg-banner__desc">{{ s.description }}</div>
+      {%- endif -%}
+
+      {%- if s.button_label != blank -%}
+        <a class="gg-btn gg-btn--dark" href="{{ s.button_link | default: '#' }}">
+          <span>{{ s.button_label }}</span>
+          {{ arrow }}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Footer bar: sustainability strip. {%- endcomment -%}
+  {%- if s.bottombar_text != blank -%}
+    <div class="gg-banner__footer">
+      <p>{{ s.bottombar_text }}</p>
+    </div>
+  {%- endif -%}
 </section>
 
 {% schema %}

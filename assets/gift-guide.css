@@ -12,8 +12,8 @@
      5. Responsive overrides
 
    PHASE STATUS
-     [x] Phase 1  file created, tokens outline (current)
-     [ ] Phase 2  banner desktop
+     [x] Phase 1  file created, tokens outline
+     [x] Phase 2  banner desktop (current)
      [ ] Phase 3  banner responsive + button animation
      [ ] Phase 4  grid desktop
      [ ] Phase 5  popup
@@ -21,9 +21,150 @@
    ========================================================================== */
 
 /* 1. Design tokens ------------------------------------------------------- */
-/* TODO Phase 2: extract exact colors/type/spacing from Figma. */
+/* Shared by both sections + popup. Values marked TODO need confirming in
+   Figma dev mode; everything else is scoped so nothing leaks into the theme. */
+.gg-banner,
+.gg-grid {
+  --gg-black: #0a0a0a;
+  --gg-white: #ffffff;
+  --gg-yellow: #f5e003;        /* TODO confirm exact Figma yellow */
+  --gg-bar-bg: #f4f4f4;        /* utility / footer strips */
+  --gg-inset: 64px;            /* hero content left offset */
+
+  /* TODO confirm Figma fonts — geometric sans for both. */
+  --gg-font-heading: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+  --gg-font-body: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+
+  box-sizing: border-box;
+  color: var(--gg-black);
+  font-family: var(--gg-font-body);
+}
+
+.gg-banner *,
+.gg-banner *::before,
+.gg-banner *::after {
+  box-sizing: border-box;
+}
 
 /* 2. Banner -------------------------------------------------------------- */
+.gg-banner {
+  background: var(--gg-white);
+}
+
+/* Utility bar (top) — tagline is absolutely centered on the page so it stays
+   put regardless of logo/button widths. */
+.gg-banner__utility {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 13px 24px;
+  background: var(--gg-bar-bg);
+}
+
+.gg-banner__logo {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.18em;
+}
+
+.gg-banner__tagline {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Hero — illustration fills the width, content sits on top at the left. */
+.gg-banner__hero {
+  position: relative;
+  background: var(--gg-white);
+}
+
+.gg-banner__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.gg-banner__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 620px;
+  padding-left: var(--gg-inset);
+}
+
+.gg-banner__heading {
+  margin: 0 0 26px;
+  font-family: var(--gg-font-heading);
+  font-size: 72px;          /* TODO confirm Figma size */
+  line-height: 1.02;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.gg-banner__desc {
+  max-width: 380px;
+  margin: 0 0 34px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.gg-banner__desc :where(p) {
+  margin: 0;
+}
+
+/* Footer bar (bottom) */
+.gg-banner__footer {
+  padding: 12px 24px;
+  background: var(--gg-bar-bg);
+  text-align: right;
+}
+
+.gg-banner__footer p {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+/* Buttons — shared shell, two variants. Arrow animation lands in Phase 3. */
+.gg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.gg-btn--yellow {
+  padding: 12px 22px;
+  background: var(--gg-yellow);
+  color: var(--gg-black);
+}
+
+.gg-btn--dark {
+  padding: 18px 30px;
+  background: var(--gg-black);
+  color: var(--gg-white);
+}
+
+.gg-arrow {
+  flex: none;
+  width: 34px;
+  height: 12px;
+}
+
 /* 3. Grid ---------------------------------------------------------------- */
 /* 4. Popup --------------------------------------------------------------- */
 /* 5. Responsive ---------------------------------------------------------- */

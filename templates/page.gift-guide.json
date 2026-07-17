@@ -1,0 +1,29 @@
+{
+  "sections": {
+    "banner": {
+      "type": "gift-guide-banner",
+      "settings": {}
+    },
+    "grid": {
+      "type": "gift-guide-grid",
+      "blocks": {
+        "product_1": { "type": "product", "settings": {} },
+        "product_2": { "type": "product", "settings": {} },
+        "product_3": { "type": "product", "settings": {} },
+        "product_4": { "type": "product", "settings": {} },
+        "product_5": { "type": "product", "settings": {} },
+        "product_6": { "type": "product", "settings": {} }
+      },
+      "block_order": [
+        "product_1",
+        "product_2",
+        "product_3",
+        "product_4",
+        "product_5",
+        "product_6"
+      ],
+      "settings": {}
+    }
+  },
+  "order": ["banner", "grid"]
+}

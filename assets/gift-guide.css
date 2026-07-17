@@ -1,0 +1,29 @@
+/* ==========================================================================
+   Gift Guide — Styles
+   --------------------------------------------------------------------------
+   Single stylesheet for both custom sections and the shared popup.
+   Mobile-first. Design baselines: desktop 1440px, mobile 375px (Figma).
+
+   ORGANISATION (filled in across phases)
+     1. Design tokens (colors, spacing, type)
+     2. Banner section
+     3. Grid section
+     4. Popup
+     5. Responsive overrides
+
+   PHASE STATUS
+     [x] Phase 1  file created, tokens outline (current)
+     [ ] Phase 2  banner desktop
+     [ ] Phase 3  banner responsive + button animation
+     [ ] Phase 4  grid desktop
+     [ ] Phase 5  popup
+     [ ] Phase 9  full responsive pass
+   ========================================================================== */
+
+/* 1. Design tokens ------------------------------------------------------- */
+/* TODO Phase 2: extract exact colors/type/spacing from Figma. */
+
+/* 2. Banner -------------------------------------------------------------- */
+/* 3. Grid ---------------------------------------------------------------- */
+/* 4. Popup --------------------------------------------------------------- */
+/* 5. Responsive ---------------------------------------------------------- */

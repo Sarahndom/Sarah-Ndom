@@ -1,0 +1,98 @@
+{%- comment -%}
+  ============================================================================
+  Gift Guide — Grid  (custom section, built from scratch)
+  ----------------------------------------------------------------------------
+  Renders the "Tisso vison in the wild" gallery: up to 6 merchant-selected
+  products laid out 3x2. Each cell shows the product's real featured image and
+  a "+" trigger that opens the shared product popup.
+
+  Product data (title, price, description, options, variants) is serialised
+  once into per-product JSON via the `gift-guide-product-json` snippet, so the
+  popup opens instantly with no extra network request.
+
+  The popup markup is included once at the end (shared by all cells).
+
+  SCHEMA NOTES
+    - "product" blocks (max 6)  : each holds one product picker.
+    - bonus_product setting      : the item auto-added to cart when a chosen
+                                   variant is Color=Black AND Size=Medium.
+                                   Kept as a setting (not hardcoded) because
+                                   variant IDs differ per store / re-import.
+
+  PHASE STATUS
+    [x] Phase 1  scaffold + schema (this file, current)
+    [ ] Phase 4  grid markup, pixel-perfect @1440
+    [ ] Phase 5  popup wiring
+    [ ] Phase 6  variant selector
+    [ ] Phase 7  AJAX add to cart
+    [ ] Phase 8  bonus-product rule
+    [ ] Phase 9  responsive @375
+  ============================================================================
+{%- endcomment -%}
+
+{{ 'gift-guide.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="gift-guide-grid"
+  data-gift-guide-grid
+  {%- if section.settings.bonus_product != blank %}
+    data-bonus-product-url="{{ section.settings.bonus_product.url }}"
+  {%- endif %}
+  aria-label="{{ section.settings.heading | escape }}"
+>
+  {%- comment -%} TODO Phase 4: heading + 6 product cells. {%- endcomment -%}
+  {%- comment -%} TODO Phase 5: {% render 'gift-guide-popup' %} {%- endcomment -%}
+</section>
+
+{% schema %}
+{
+  "name": "Gift Guide Grid",
+  "tag": "section",
+  "class": "gift-guide-grid-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tisso vison in the wild"
+    },
+    {
+      "type": "header",
+      "content": "Cart rules"
+    },
+    {
+      "type": "product",
+      "id": "bonus_product",
+      "label": "Bonus product (auto-add)",
+      "info": "Automatically added to the cart when a product is added with Color = Black and Size = Medium."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Guide Grid",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

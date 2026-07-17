@@ -1,0 +1,112 @@
+{%- comment -%}
+  ============================================================================
+  Gift Guide — Banner  (custom section, built from scratch)
+  ----------------------------------------------------------------------------
+  Renders the top hero of the Gift Guide page:
+    - utility bar   : logo text + tagline + "CHOOSE GIFT" button
+    - hero          : background illustration, heading, description, "SHOP NOW"
+    - footer bar    : sustainability strip
+
+  Every piece of copy highlighted in the Figma is exposed through the schema
+  below so a merchant can edit it from the Theme Editor without touching code.
+
+  PHASE STATUS
+    [x] Phase 1  scaffold + schema (this file, current)
+    [ ] Phase 2  desktop markup, pixel-perfect @1440
+    [ ] Phase 3  responsive @375 + button animation
+  ============================================================================
+{%- endcomment -%}
+
+{{ 'gift-guide.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="gift-guide-banner"
+  data-gift-guide-banner
+  aria-label="{{ section.settings.heading | escape }}"
+>
+  {%- comment -%} TODO Phase 2: utility bar / hero / footer bar markup. {%- endcomment -%}
+</section>
+
+{% schema %}
+{
+  "name": "Gift Guide Banner",
+  "tag": "section",
+  "class": "gift-guide-banner-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Utility bar (top)"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text",
+      "default": "TISSO VISON"
+    },
+    {
+      "type": "text",
+      "id": "topbar_text",
+      "label": "Tagline",
+      "default": "Find the ideal gift for your loved ones."
+    },
+    {
+      "type": "text",
+      "id": "topbar_button_label",
+      "label": "Button label",
+      "default": "CHOOSE GIFT"
+    },
+    {
+      "type": "url",
+      "id": "topbar_button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background illustration"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Gift Guide"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Discover Joy: Your Ultimate Holiday Gift Destination. Explore our curated selection and find the perfect gifts to delight your loved ones this holiday season.</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Footer bar (bottom)"
+    },
+    {
+      "type": "text",
+      "id": "bottombar_text",
+      "label": "Footer text",
+      "default": "SUSTAINABLE, ETHICALLY MADE CLOTHES IN SIZES XXS TO 6XL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift Guide Banner"
+    }
+  ]
+}
+{% endschema %}

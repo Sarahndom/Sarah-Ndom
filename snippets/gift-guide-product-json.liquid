@@ -1,0 +1,21 @@
+{%- comment -%}
+  ============================================================================
+  Gift Guide — Product JSON  (helper, rendered once per grid cell)
+  ----------------------------------------------------------------------------
+  Serialises a single product into a <script type="application/json"> blob the
+  popup reads on open. Emitting a curated payload (rather than the full product
+  object) keeps the DOM lean and the JS simple.
+
+  Usage (Phase 5):
+    {% render 'gift-guide-product-json', product: block.settings.product %}
+
+  Planned payload: id, title, url, description, featured_image, options,
+  and variants[{ id, title, options, available, price }].
+
+  PHASE STATUS
+    [x] Phase 1  scaffold (this file, current)
+    [ ] Phase 5  JSON payload
+  ============================================================================
+{%- endcomment -%}
+
+{%- comment -%} TODO Phase 5: emit product JSON payload. {%- endcomment -%}

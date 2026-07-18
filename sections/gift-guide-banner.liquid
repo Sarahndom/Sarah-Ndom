@@ -41,20 +41,15 @@
     {%- endif -%}
   </div>
 
-  {%- comment -%} Hero: illustration background with content overlaid on the left. {%- endcomment -%}
-  <div class="gg-banner__hero">
-    {%- if s.background_image != blank -%}
-      <img
-        class="gg-banner__illustration"
-        src="{{ s.background_image | image_url: width: 2000 }}"
-        alt="{{ s.background_image.alt | escape }}"
-        width="{{ s.background_image.width }}"
-        height="{{ s.background_image.height }}"
-        loading="eager"
-        fetchpriority="high"
-      >
-    {%- endif -%}
-
+  {%- comment -%} Hero: illustration as a full-bleed cover background. Uses the
+     merchant image if set, otherwise the bundled asset so it looks right out of
+     the box (no customizer upload required). {%- endcomment -%}
+  {%- if s.background_image != blank -%}
+    {%- assign hero_bg = s.background_image | image_url: width: 3000 -%}
+  {%- else -%}
+    {%- assign hero_bg = 'gift-guide-banner-bg.png' | asset_url -%}
+  {%- endif -%}
+  <div class="gg-banner__hero" style="background-image: url('{{ hero_bg }}');">
     <div class="gg-banner__content">
       {%- if s.heading != blank -%}
         <h1 class="gg-banner__heading">{{ s.heading }}</h1>

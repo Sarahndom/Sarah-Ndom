@@ -4,27 +4,20 @@
    Single stylesheet for both custom sections and the shared popup.
    Mobile-first. Design baselines: desktop 1440px, mobile 375px (Figma).
 
-   ORGANISATION (filled in across phases)
+   ORGANISATION
      1. Design tokens (colors, spacing, type)
      2. Banner section
      3. Grid section
      4. Popup
      5. Responsive overrides
-
-   PHASE STATUS
-     [x] Phase 1  file created, tokens outline
-     [x] Phase 2  banner desktop
-     [x] Phase 3  banner responsive + button animation (current)
-     [ ] Phase 4  grid desktop
-     [ ] Phase 5  popup
-     [x] Phase 9  full responsive pass (current)
    ========================================================================== */
 
 /* 1. Design tokens ------------------------------------------------------- */
 /* Shared by both sections + popup. Values marked TODO need confirming in
    Figma dev mode; everything else is scoped so nothing leaks into the theme. */
 .gg-banner,
-.gg-grid {
+.gg-grid,
+.gg-popup {
   --gg-black: #0a0a0a;
   --gg-white: #ffffff;
   --gg-yellow: #f5e003;        /* TODO confirm exact Figma yellow */
@@ -40,9 +33,9 @@
   font-family: var(--gg-font-body);
 }
 
-.gg-banner *,
-.gg-banner *::before,
-.gg-banner *::after {
+.gg-banner *, .gg-banner *::before, .gg-banner *::after,
+.gg-grid *, .gg-grid *::before, .gg-grid *::after,
+.gg-popup *, .gg-popup *::before, .gg-popup *::after {
   box-sizing: border-box;
 }
 
@@ -137,7 +130,7 @@
   letter-spacing: 0.04em;
 }
 
-/* Buttons — shared shell, two variants. Arrow animation lands in Phase 3. */
+/* Buttons — shared shell, two variants. */
 .gg-btn {
   display: inline-flex;
   align-items: center;
@@ -211,12 +204,6 @@
   --gg-grid-gap: 30px;
   padding: 64px 40px 80px;
   background: var(--gg-white);
-}
-
-.gg-grid *,
-.gg-grid *::before,
-.gg-grid *::after {
-  box-sizing: border-box;
 }
 
 .gg-grid__heading {
@@ -320,12 +307,6 @@
 
 .gg-popup[hidden] {
   display: none;
-}
-
-.gg-popup *,
-.gg-popup *::before,
-.gg-popup *::after {
-  box-sizing: border-box;
 }
 
 .gg-popup__overlay {
@@ -497,11 +478,30 @@
   background: #f2f2f2;
 }
 
+/* Sizes with no available variant for the chosen color. */
+.gg-popup__select-option.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Add to cart — full-width dark button */
 .gg-popup__add {
   width: 100%;
   justify-content: center;
   margin-top: 6px;
+}
+
+/* Disabled (variant unavailable / incomplete) + loading states. */
+.gg-popup__add:disabled,
+.gg-popup__add:disabled:hover {
+  background: var(--gg-black);
+  color: var(--gg-white);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gg-popup__add.is-loading {
+  cursor: wait;
 }
 
 @media (prefers-reduced-motion: reduce) {

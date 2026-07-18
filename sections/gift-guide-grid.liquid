@@ -18,15 +18,6 @@
                                    variant is Color=Black AND Size=Medium.
                                    Kept as a setting (not hardcoded) because
                                    variant IDs differ per store / re-import.
-
-  PHASE STATUS
-    [x] Phase 1  scaffold + schema
-    [x] Phase 4  grid markup, pixel-perfect @1440
-    [x] Phase 5  popup + product-json wiring, script load (this file, current)
-    [x] Phase 6  variant selector (in gift-guide.js)
-    [x] Phase 7  AJAX add to cart (in gift-guide.js)
-    [x] Phase 8  bonus-product rule (bonus data attrs here + logic in js)
-    [ ] Phase 9  responsive @375
   ============================================================================
 {%- endcomment -%}
 
@@ -39,7 +30,9 @@
     data-bonus-product-id="{{ section.settings.bonus_product.id }}"
     data-bonus-variant-id="{{ section.settings.bonus_product.selected_or_first_available_variant.id }}"
   {%- endif %}
-  aria-labelledby="gg-grid-heading-{{ section.id }}"
+  {%- if section.settings.heading != blank %}
+    aria-labelledby="gg-grid-heading-{{ section.id }}"
+  {%- endif %}
 >
   {%- if section.settings.heading != blank -%}
     <h2 class="gg-grid__heading" id="gg-grid-heading-{{ section.id }}">
@@ -66,7 +59,7 @@
               {{ 'product-1' | placeholder_svg_tag: 'gg-grid__image gg-grid__image--placeholder' }}
             {%- endif -%}
 
-            {%- comment -%} Opens the product popup (wired in Phase 5). {%- endcomment -%}
+            {%- comment -%} Opens the product popup. {%- endcomment -%}
             <button
               type="button"
               class="gg-grid__add"

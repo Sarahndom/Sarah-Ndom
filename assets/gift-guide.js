@@ -3,21 +3,14 @@
    --------------------------------------------------------------------------
    Vanilla JavaScript only. No jQuery, no frameworks. Loaded with `defer`.
 
-   This phase: the product popup — open/close, ESC + overlay dismiss, focus
-   trap, dynamic population from product JSON, variant resolution, live price
-   + availability, and enabling/disabling the Add to Cart button.
-
-   Add to Cart itself is intentionally NOT wired yet (Phase 7).
+   Product popup: open/close, ESC + overlay dismiss, focus trap, dynamic
+   population from the per-product JSON, variant resolution, live price +
+   availability, and AJAX add-to-cart including the Black+Medium bonus rule.
 
    Expected DOM (rendered by the grid section + snippets):
      [data-gift-guide-grid] .gg-grid__add[data-product-id]   trigger buttons
      script.gg-product-json[data-product-id]                 per-product data
      [data-gg-popup]                                         the dialog shell
-
-   PHASE STATUS
-     [x] Phase 6  popup engine
-     [x] Phase 7  add to cart (current)
-     [x] Phase 8  bonus-product rule (current)
    ========================================================================== */
 
 (function () {
@@ -47,14 +40,16 @@
     add: '[data-gg-popup-add]'
   };
 
+  const SWATCH = 'gg-popup__swatch';
+  const OPTION = 'gg-popup__select-option';
   const SIZE_PLACEHOLDER = 'Choose your size';
 
-  let popup, dialog;          // shared popup elements
+  let popup, dialog;          // popup root + focusable dialog
+  let el = {};                // cached static popup elements (queried once)
   let lastFocused = null;     // element to restore focus to on close
   let current = null;         // state for the product currently shown
-  const dataCache = new Map();
 
-  let gridSection = null;     // holds the bonus-product data attributes
+  const dataCache = new Map();
   let bonusVariantId = '';    // added automatically on Black + Medium
   let bonusProductId = '';
 
@@ -65,11 +60,11 @@
     if (!id) return null;
     if (dataCache.has(id)) return dataCache.get(id);
 
-    const el = document.querySelector(SEL.productJson + '[data-product-id="' + id + '"]');
+    const node = document.querySelector(SEL.productJson + '[data-product-id="' + id + '"]');
     let data = null;
-    if (el) {
+    if (node) {
       try {
-        data = JSON.parse(el.textContent);
+        data = JSON.parse(node.textContent);
       } catch (err) {
         console.warn('Gift Guide: could not parse product JSON', err);
       }
@@ -96,7 +91,7 @@
       size: { option: size.option, index: size.index, value: null }
     };
 
-    // Default the color to the first available variant's color; leave size unset.
+    // Default the color to the first available variant's; leave size unset.
     if (current.color.option) {
       const firstAvailable = data.variants.find(function (v) { return v.available; });
       current.color.value = firstAvailable
@@ -107,7 +102,7 @@
 
   /* ---- Variants ---------------------------------------------------------- */
 
-  // Find the variant matching the currently selected options (by option index).
+  // Find the variant matching the given options (by mapped option index).
   function variantFor(colorValue, sizeValue) {
     return current.data.variants.find(function (v) {
       if (current.color.option && v.options[current.color.index] !== colorValue) return false;
@@ -124,67 +119,58 @@
   /* ---- Rendering --------------------------------------------------------- */
 
   function renderColors() {
-    const wrap = popup.querySelector(SEL.colorWrap);
-    const group = popup.querySelector(SEL.colorValues);
-    const label = popup.querySelector(SEL.colorLabel);
-
-    if (!current.color.option) { wrap.hidden = true; return; }
-    wrap.hidden = false;
-    label.textContent = current.color.option.name;
-    group.innerHTML = '';
+    if (!current.color.option) { el.colorWrap.hidden = true; return; }
+    el.colorWrap.hidden = false;
+    el.colorLabel.textContent = current.color.option.name;
+    el.colorValues.innerHTML = '';
 
     current.color.option.values.forEach(function (value) {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'gg-popup__swatch';
+      btn.className = SWATCH;
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-checked', 'false');
       btn.textContent = value;
       btn.addEventListener('click', function () { selectColor(value); });
-      group.appendChild(btn);
+      el.colorValues.appendChild(btn);
     });
   }
 
   function renderSizes() {
-    const wrap = popup.querySelector(SEL.sizeWrap);
-    const list = popup.querySelector(SEL.sizeValues);
-    const label = popup.querySelector(SEL.sizeLabel);
-
-    if (!current.size.option) { wrap.hidden = true; return; }
-    wrap.hidden = false;
-    label.textContent = current.size.option.name;
-    list.innerHTML = '';
+    if (!current.size.option) { el.sizeWrap.hidden = true; return; }
+    el.sizeWrap.hidden = false;
+    el.sizeLabel.textContent = current.size.option.name;
+    el.sizeValues.innerHTML = '';
 
     current.size.option.values.forEach(function (value) {
       const li = document.createElement('li');
-      li.className = 'gg-popup__select-option';
+      li.className = OPTION;
       li.setAttribute('role', 'option');
       li.setAttribute('aria-selected', 'false');
       li.tabIndex = -1;
       li.textContent = value;
       li.addEventListener('click', function () { selectSize(value); });
-      list.appendChild(li);
+      el.sizeValues.appendChild(li);
     });
   }
 
   // Reflect the chosen color on the swatches.
   function applyColorSelection() {
-    popup.querySelectorAll('.gg-popup__swatch').forEach(function (btn) {
+    el.colorValues.querySelectorAll('.' + SWATCH).forEach(function (btn) {
       btn.setAttribute('aria-checked', String(btn.textContent === current.color.value));
     });
   }
 
   // Reflect the chosen size + grey out sizes with no available variant.
   function refreshSizes() {
-    popup.querySelectorAll('.gg-popup__select-option').forEach(function (li) {
+    el.sizeValues.querySelectorAll('.' + OPTION).forEach(function (li) {
       const value = li.textContent;
       const disabled = !isAvailable(current.color.value, value);
       li.setAttribute('aria-selected', String(value === current.size.value));
       li.setAttribute('aria-disabled', String(disabled));
       li.classList.toggle('is-disabled', disabled);
     });
-    const currentEl = popup.querySelector(SEL.sizeCurrent);
-    currentEl.textContent = current.size.value || SIZE_PLACEHOLDER;
+    el.sizeCurrent.textContent = current.size.value || SIZE_PLACEHOLDER;
   }
 
   /* ---- Selection --------------------------------------------------------- */
@@ -206,46 +192,42 @@
     current.size.value = value;
     refreshSizes();
     toggleSize(false);
-    popup.querySelector(SEL.sizeToggle).focus();
+    el.sizeToggle.focus();
     sync();
   }
 
-  // Price + availability + Add to Cart enablement.
+  // Single source of truth for price + availability + Add to Cart enablement.
   function sync() {
     const variant = variantFor(current.color.value, current.size.value);
-    const addBtn = popup.querySelector(SEL.add);
-
-    popup.querySelector(SEL.price).textContent = variant ? variant.price : current.data.price;
+    el.price.textContent = variant ? variant.price : current.data.price;
 
     const chosen =
       (!current.color.option || current.color.value) &&
       (!current.size.option || current.size.value);
     const enabled = chosen && !!variant && variant.available;
 
-    addBtn.disabled = !enabled;
-    addBtn.setAttribute('aria-disabled', String(!enabled));
-    addBtn.dataset.variantId = variant ? variant.id : ''; // handy for Phase 7
+    el.add.disabled = !enabled;
+    el.add.setAttribute('aria-disabled', String(!enabled));
+    el.add.dataset.variantId = variant ? variant.id : '';
   }
 
   /* ---- Size dropdown ----------------------------------------------------- */
 
   function toggleSize(force) {
-    const toggle = popup.querySelector(SEL.sizeToggle);
-    const list = popup.querySelector(SEL.sizeValues);
-    const open = typeof force === 'boolean' ? force : list.hidden;
-
-    list.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
+    const open = typeof force === 'boolean' ? force : el.sizeValues.hidden;
+    el.sizeValues.hidden = !open;
+    el.sizeToggle.setAttribute('aria-expanded', String(open));
 
     if (open) {
-      const target = list.querySelector('[aria-selected="true"]') || list.querySelector('.gg-popup__select-option');
+      const target = el.sizeValues.querySelector('[aria-selected="true"]') ||
+        el.sizeValues.querySelector('.' + OPTION);
       if (target) target.focus();
     }
   }
 
-  // Arrow / Enter / Escape support inside the size listbox.
+  // Arrow / Enter navigation inside the size listbox.
   function onSizeListKeydown(e) {
-    const options = Array.prototype.slice.call(popup.querySelectorAll('.gg-popup__select-option'));
+    const options = Array.prototype.slice.call(el.sizeValues.querySelectorAll('.' + OPTION));
     const index = options.indexOf(document.activeElement);
 
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
@@ -255,7 +237,7 @@
       if (target) target.focus();
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (document.activeElement.classList.contains('gg-popup__select-option')) {
+      if (document.activeElement.classList.contains(OPTION)) {
         selectSize(document.activeElement.textContent);
       }
     }
@@ -265,12 +247,11 @@
 
   function populate() {
     const d = current.data;
-    const img = popup.querySelector(SEL.image);
 
-    img.src = d.image || '';
-    img.alt = d.title || '';
-    popup.querySelector(SEL.title).textContent = d.title || '';
-    popup.querySelector(SEL.description).innerHTML = d.description || '';
+    if (d.image) el.image.src = d.image; else el.image.removeAttribute('src');
+    el.image.alt = d.title || '';
+    el.title.textContent = d.title || '';
+    el.description.innerHTML = d.description || '';
 
     renderColors();
     renderSizes();
@@ -305,17 +286,16 @@
 
   function focusable() {
     const nodes = dialog.querySelectorAll('button, [href], [tabindex]:not([tabindex="-1"])');
-    return Array.prototype.slice.call(nodes).filter(function (el) {
-      return !el.disabled && el.offsetParent !== null;
+    return Array.prototype.slice.call(nodes).filter(function (node) {
+      return !node.disabled && node.offsetParent !== null;
     });
   }
 
   function onKeydown(e) {
     if (e.key === 'Escape') {
-      const list = popup.querySelector(SEL.sizeValues);
-      if (list && !list.hidden) {            // close the dropdown first
+      if (!el.sizeValues.hidden) {          // close the dropdown first
         toggleSize(false);
-        popup.querySelector(SEL.sizeToggle).focus();
+        el.sizeToggle.focus();
       } else {
         close();
       }
@@ -361,21 +341,20 @@
     return items;
   }
 
-  function setButtonLabel(btn, text) {
-    const span = btn.querySelector('span');
+  function setButtonLabel(text) {
+    const span = el.add.querySelector('span');
     if (span) span.textContent = text;
   }
 
   function addToCart() {
     if (!current) return;
-    const addBtn = popup.querySelector(SEL.add);
-    const variantId = addBtn.dataset.variantId;
-    if (!variantId || addBtn.disabled) return;
+    const variantId = el.add.dataset.variantId;
+    if (!variantId || el.add.disabled) return;
 
-    const original = addBtn.querySelector('span') ? addBtn.querySelector('span').textContent : 'ADD TO CART';
-    addBtn.disabled = true;
-    addBtn.classList.add('is-loading');
-    setButtonLabel(addBtn, 'Adding…');
+    const original = el.add.querySelector('span') ? el.add.querySelector('span').textContent : 'ADD TO CART';
+    el.add.disabled = true;
+    el.add.classList.add('is-loading');
+    setButtonLabel('Adding…');
 
     fetch('/cart/add.js', {
       method: 'POST',
@@ -389,21 +368,21 @@
         return res.json();
       })
       .then(function () {
-        addBtn.classList.remove('is-loading');
-        setButtonLabel(addBtn, 'Added ✓');
+        el.add.classList.remove('is-loading');
+        setButtonLabel('Added ✓');
         refreshCartCount();
         document.dispatchEvent(new CustomEvent('gift-guide:cart-updated', { bubbles: true }));
         window.setTimeout(function () {
-          setButtonLabel(addBtn, original);
+          setButtonLabel(original);
           sync(); // restore correct enabled/disabled state
         }, 1400);
       })
       .catch(function (err) {
         console.warn('Gift Guide: add to cart failed —', err.message);
-        addBtn.classList.remove('is-loading');
-        setButtonLabel(addBtn, 'Try again');
-        addBtn.disabled = false;
-        window.setTimeout(function () { setButtonLabel(addBtn, original); }, 1600);
+        el.add.classList.remove('is-loading');
+        setButtonLabel('Try again');
+        el.add.disabled = false;
+        window.setTimeout(function () { setButtonLabel(original); }, 1600);
       });
   }
 
@@ -412,8 +391,8 @@
     fetch('/cart.js', { headers: { Accept: 'application/json' } })
       .then(function (r) { return r.json(); })
       .then(function (cart) {
-        document.querySelectorAll('[data-cart-count], .cart-count').forEach(function (el) {
-          el.textContent = cart.item_count;
+        document.querySelectorAll('[data-cart-count], .cart-count').forEach(function (node) {
+          node.textContent = cart.item_count;
         });
       })
       .catch(function () {});
@@ -421,22 +400,31 @@
 
   /* ---- Init -------------------------------------------------------------- */
 
+  // Query every static popup element once, up front.
+  function cacheElements() {
+    dialog = popup.querySelector(SEL.dialog);
+    ['overlay', 'close', 'image', 'title', 'price', 'description',
+      'colorWrap', 'colorLabel', 'colorValues',
+      'sizeWrap', 'sizeLabel', 'sizeToggle', 'sizeCurrent', 'sizeValues', 'add']
+      .forEach(function (key) { el[key] = popup.querySelector(SEL[key]); });
+  }
+
   function init() {
     popup = document.querySelector(SEL.popup);
-    if (!popup) return; // popup not on the page yet
-    dialog = popup.querySelector(SEL.dialog);
+    if (!popup) return; // popup not on the page
+    cacheElements();
 
-    gridSection = document.querySelector(SEL.grid);
-    if (gridSection) {
-      bonusVariantId = gridSection.dataset.bonusVariantId || '';
-      bonusProductId = gridSection.dataset.bonusProductId || '';
+    const grid = document.querySelector(SEL.grid);
+    if (grid) {
+      bonusVariantId = grid.dataset.bonusVariantId || '';
+      bonusProductId = grid.dataset.bonusProductId || '';
     }
 
-    popup.querySelector(SEL.close).addEventListener('click', close);
-    popup.querySelector(SEL.overlay).addEventListener('click', close);
-    popup.querySelector(SEL.sizeToggle).addEventListener('click', function () { toggleSize(); });
-    popup.querySelector(SEL.sizeValues).addEventListener('keydown', onSizeListKeydown);
-    popup.querySelector(SEL.add).addEventListener('click', addToCart);
+    el.close.addEventListener('click', close);
+    el.overlay.addEventListener('click', close);
+    el.sizeToggle.addEventListener('click', function () { toggleSize(); });
+    el.sizeValues.addEventListener('keydown', onSizeListKeydown);
+    el.add.addEventListener('click', addToCart);
 
     document.querySelectorAll(SEL.grid + ' ' + SEL.trigger).forEach(function (btn) {
       btn.addEventListener('click', function () { open(btn.dataset.productId, btn); });

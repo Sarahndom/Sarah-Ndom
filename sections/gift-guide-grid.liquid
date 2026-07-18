@@ -20,8 +20,8 @@
                                    variant IDs differ per store / re-import.
 
   PHASE STATUS
-    [x] Phase 1  scaffold + schema (this file, current)
-    [ ] Phase 4  grid markup, pixel-perfect @1440
+    [x] Phase 1  scaffold + schema
+    [x] Phase 4  grid markup, pixel-perfect @1440 (this file, current)
     [ ] Phase 5  popup wiring
     [ ] Phase 6  variant selector
     [ ] Phase 7  AJAX add to cart
@@ -33,15 +33,58 @@
 {{ 'gift-guide.css' | asset_url | stylesheet_tag }}
 
 <section
-  class="gift-guide-grid"
+  class="gg-grid"
   data-gift-guide-grid
   {%- if section.settings.bonus_product != blank %}
     data-bonus-product-url="{{ section.settings.bonus_product.url }}"
   {%- endif %}
-  aria-label="{{ section.settings.heading | escape }}"
+  aria-labelledby="gg-grid-heading-{{ section.id }}"
 >
-  {%- comment -%} TODO Phase 4: heading + 6 product cells. {%- endcomment -%}
-  {%- comment -%} TODO Phase 5: {% render 'gift-guide-popup' %} {%- endcomment -%}
+  {%- if section.settings.heading != blank -%}
+    <h2 class="gg-grid__heading" id="gg-grid-heading-{{ section.id }}">
+      {{ section.settings.heading }}
+    </h2>
+  {%- endif -%}
+
+  <ul class="gg-grid__list" role="list">
+    {%- for block in section.blocks -%}
+      {%- assign product = block.settings.product -%}
+      <li class="gg-grid__item" {{ block.shopify_attributes }}>
+        <div class="gg-grid__card">
+          {%- if product != blank -%}
+            {%- if product.featured_image != blank -%}
+              <img
+                class="gg-grid__image"
+                src="{{ product.featured_image | image_url: width: 900 }}"
+                alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                width="{{ product.featured_image.width }}"
+                height="{{ product.featured_image.height }}"
+                loading="lazy"
+              >
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'gg-grid__image gg-grid__image--placeholder' }}
+            {%- endif -%}
+
+            {%- comment -%} Opens the product popup (wired in Phase 5). {%- endcomment -%}
+            <button
+              type="button"
+              class="gg-grid__add"
+              aria-label="View {{ product.title | escape }}"
+            >
+              <svg class="gg-grid__add-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          {%- else -%}
+            {%- comment -%} Empty slot — shown in the editor until a product is picked. {%- endcomment -%}
+            {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'gg-grid__image gg-grid__image--placeholder' }}
+          {%- endif -%}
+        </div>
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  {%- comment -%} TODO Phase 5: {% render 'gift-guide-popup' %} + gift-guide.js {%- endcomment -%}
 </section>
 
 {% schema %}

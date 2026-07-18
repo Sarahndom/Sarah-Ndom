@@ -78,9 +78,12 @@
   white-space: nowrap;
 }
 
-/* Hero — illustration fills the width, content sits on top at the left. */
+/* Hero — illustration fills the width, content sits on top at the left.
+   min-height is a fallback so the overlaid content never collapses onto the
+   bars when no background image is set yet (an image overrides this height). */
 .gg-banner__hero {
   position: relative;
+  min-height: 560px;
   background: var(--gg-white);
 }
 
@@ -203,6 +206,106 @@
 }
 
 /* 3. Grid ---------------------------------------------------------------- */
+.gg-grid {
+  --gg-grid-max: 1337px;   /* content width from Figma */
+  --gg-grid-gap: 30px;
+  padding: 64px 40px 80px;
+  background: var(--gg-white);
+}
+
+.gg-grid *,
+.gg-grid *::before,
+.gg-grid *::after {
+  box-sizing: border-box;
+}
+
+.gg-grid__heading {
+  max-width: var(--gg-grid-max);
+  margin: 0 auto 38px;
+  font-family: var(--gg-font-heading);
+  font-size: 28px;          /* TODO confirm Figma size */
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.gg-grid__list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gg-grid-gap);
+  max-width: var(--gg-grid-max);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.gg-grid__item {
+  margin: 0;
+}
+
+/* Fixed portrait ratio (~425x475 from Figma) keeps all six cells uniform
+   regardless of the source image dimensions. */
+.gg-grid__card {
+  position: relative;
+  aspect-ratio: 425 / 475;
+  overflow: hidden;
+  background: #f2f2f2;
+}
+
+.gg-grid__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gg-grid__image--placeholder {
+  background: #ededed;
+}
+
+/* Circular "+" trigger, centered on the card. */
+.gg-grid__add {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--gg-black);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.gg-grid__add:hover {
+  background: #fff;
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+.gg-grid__add:focus-visible {
+  outline: 2px solid var(--gg-black);
+  outline-offset: 2px;
+}
+
+.gg-grid__add-icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-grid__add {
+    transition: none;
+  }
+  .gg-grid__add:hover {
+    transform: translate(-50%, -50%);
+  }
+}
+
 /* 4. Popup --------------------------------------------------------------- */
 
 /* 5. Responsive ---------------------------------------------------------- */
@@ -254,6 +357,7 @@
   .gg-banner__hero {
     display: flex;
     flex-direction: column;
+    min-height: auto;
   }
   .gg-banner__content {
     position: static;

@@ -39,6 +39,7 @@
             "title": {{ variant.title | json }},
             "available": {{ variant.available | json }},
             "price": {{ variant.price | money | json }},
+            "image": {%- if variant.image != blank -%}{{ variant.image | image_url: width: 600 | json }}{%- else -%}null{%- endif -%},
             "options": {{ variant.options | json }}
           }{%- unless forloop.last -%},{%- endunless -%}
         {%- endfor -%}

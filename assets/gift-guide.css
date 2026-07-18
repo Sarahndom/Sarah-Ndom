@@ -300,6 +300,13 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+/* .is-open is toggled by JS a frame after unhiding, so it animates in. */
+.gg-popup.is-open {
+  opacity: 1;
 }
 
 .gg-popup[hidden] {
@@ -322,6 +329,12 @@
   padding: 26px;
   background: var(--gg-white);
   font-family: var(--gg-font-body);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 0.22s ease;
+}
+
+.gg-popup.is-open .gg-popup__dialog {
+  transform: none;
 }
 
 .gg-popup__close {
@@ -372,6 +385,7 @@
 .gg-popup__desc {
   font-size: 13px;
   line-height: 1.5;
+  color: #555;
 }
 
 .gg-popup__desc :where(p) {
@@ -406,6 +420,7 @@
   color: var(--gg-black);
   font-size: 14px;
   cursor: pointer;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
 .gg-popup__swatch + .gg-popup__swatch {
@@ -502,8 +517,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gg-popup__chevron {
+  .gg-popup__chevron,
+  .gg-popup,
+  .gg-popup__dialog,
+  .gg-popup__swatch {
     transition: none;
+  }
+  .gg-popup__dialog {
+    transform: none;
   }
 }
 

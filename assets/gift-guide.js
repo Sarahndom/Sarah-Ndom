@@ -48,6 +48,7 @@
   let el = {};                // cached static popup elements (queried once)
   let lastFocused = null;     // element to restore focus to on close
   let current = null;         // state for the product currently shown
+  let hideTimer = null;       // deferred hide during the close transition
 
   const dataCache = new Map();
   let bonusVariantId = '';    // added automatically on Black + Medium
@@ -201,6 +202,10 @@
     const variant = variantFor(current.color.value, current.size.value);
     el.price.textContent = variant ? variant.price : current.data.price;
 
+    // Swap to the variant's own image when it has one, else the featured image.
+    const image = variant && variant.image ? variant.image : current.data.image;
+    if (image) el.image.src = image;
+
     const chosen =
       (!current.color.option || current.color.value) &&
       (!current.size.option || current.size.value);
@@ -268,7 +273,12 @@
     buildState(data);
     populate();
 
+    if (hideTimer) { window.clearTimeout(hideTimer); hideTimer = null; }
     popup.hidden = false;
+    // Add .is-open a frame later so the fade/scale transition plays.
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { popup.classList.add('is-open'); });
+    });
     document.body.style.overflow = 'hidden'; // lock background scroll
     dialog.focus();
     document.addEventListener('keydown', onKeydown);
@@ -276,7 +286,8 @@
 
   function close() {
     toggleSize(false);
-    popup.hidden = true;
+    popup.classList.remove('is-open');
+    hideTimer = window.setTimeout(function () { popup.hidden = true; }, 220); // after transition
     document.body.style.overflow = '';
     document.removeEventListener('keydown', onKeydown);
     if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
@@ -359,7 +370,11 @@
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ items: buildItems(variantId) })
+      body: JSON.stringify({
+        items: buildItems(variantId),
+        sections: 'cart-drawer-section',
+        sections_url: window.location.pathname
+      })
     })
       .then(function (res) {
         if (!res.ok) {
@@ -367,10 +382,10 @@
         }
         return res.json();
       })
-      .then(function () {
+      .then(function (data) {
         el.add.classList.remove('is-loading');
         setButtonLabel('Added ✓');
-        refreshCartCount();
+        refreshCartUI(data && data.sections);
         document.dispatchEvent(new CustomEvent('gift-guide:cart-updated', { bubbles: true }));
         window.setTimeout(function () {
           setButtonLabel(original);
@@ -386,16 +401,47 @@
       });
   }
 
-  // Best-effort header count refresh; silently ignored if the theme differs.
-  function refreshCartCount() {
+  function refreshCartUI(sections) {
+    updateCartBubble();
+    openCartDrawer(sections);
+  }
+
+  // Reliable graceful indicator: refresh Horizon's cart bubble from /cart.js.
+  function updateCartBubble() {
     fetch('/cart.js', { headers: { Accept: 'application/json' } })
       .then(function (r) { return r.json(); })
       .then(function (cart) {
-        document.querySelectorAll('[data-cart-count], .cart-count').forEach(function (node) {
+        document.querySelectorAll('.cart-bubble__text-count, [data-cart-count], .cart-count').forEach(function (node) {
           node.textContent = cart.item_count;
+          node.classList.remove('hidden');
+        });
+        document.querySelectorAll('.cart-bubble').forEach(function (node) {
+          node.classList.remove('visually-hidden');
         });
       })
       .catch(function () {});
+  }
+
+  // Best-effort: refresh + open Horizon's cart drawer via the Section Rendering
+  // API. Fully guarded — if the theme differs, the bubble refresh is enough.
+  function openCartDrawer(sections) {
+    try {
+      const id = 'shopify-section-cart-drawer-section';
+      const target = document.getElementById(id);
+      const html = sections && sections['cart-drawer-section'];
+      if (!target || !html) return;
+
+      const incoming = new DOMParser().parseFromString(html, 'text/html').getElementById(id);
+      target.innerHTML = incoming ? incoming.innerHTML : html;
+
+      customElements.whenDefined('theme-drawer').then(function () {
+        const drawer = document.querySelector('cart-drawer-component');
+        const themeDrawer = drawer && drawer.closest('theme-drawer');
+        if (themeDrawer && typeof themeDrawer.open === 'function') themeDrawer.open();
+      });
+    } catch (err) {
+      /* graceful no-op; the bubble was already refreshed */
+    }
   }
 
   /* ---- Init -------------------------------------------------------------- */

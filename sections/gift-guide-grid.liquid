@@ -21,11 +21,11 @@
 
   PHASE STATUS
     [x] Phase 1  scaffold + schema
-    [x] Phase 4  grid markup, pixel-perfect @1440 (this file, current)
-    [ ] Phase 5  popup wiring
-    [ ] Phase 6  variant selector
-    [ ] Phase 7  AJAX add to cart
-    [ ] Phase 8  bonus-product rule
+    [x] Phase 4  grid markup, pixel-perfect @1440
+    [x] Phase 5  popup + product-json wiring, script load (this file, current)
+    [x] Phase 6  variant selector (in gift-guide.js)
+    [x] Phase 7  AJAX add to cart (in gift-guide.js)
+    [x] Phase 8  bonus-product rule (bonus data attrs here + logic in js)
     [ ] Phase 9  responsive @375
   ============================================================================
 {%- endcomment -%}
@@ -36,7 +36,8 @@
   class="gg-grid"
   data-gift-guide-grid
   {%- if section.settings.bonus_product != blank %}
-    data-bonus-product-url="{{ section.settings.bonus_product.url }}"
+    data-bonus-product-id="{{ section.settings.bonus_product.id }}"
+    data-bonus-variant-id="{{ section.settings.bonus_product.selected_or_first_available_variant.id }}"
   {%- endif %}
   aria-labelledby="gg-grid-heading-{{ section.id }}"
 >
@@ -69,12 +70,16 @@
             <button
               type="button"
               class="gg-grid__add"
+              data-product-id="{{ product.id }}"
               aria-label="View {{ product.title | escape }}"
             >
               <svg class="gg-grid__add-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
                 <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
               </svg>
             </button>
+
+            {%- comment -%} Product data the popup reads on open. {%- endcomment -%}
+            {% render 'gift-guide-product-json', product: product %}
           {%- else -%}
             {%- comment -%} Empty slot — shown in the editor until a product is picked. {%- endcomment -%}
             {{ 'product-' | append: forloop.index | placeholder_svg_tag: 'gg-grid__image gg-grid__image--placeholder' }}
@@ -84,8 +89,11 @@
     {%- endfor -%}
   </ul>
 
-  {%- comment -%} TODO Phase 5: {% render 'gift-guide-popup' %} + gift-guide.js {%- endcomment -%}
+  {%- comment -%} Shared popup, rendered once for all cells. {%- endcomment -%}
+  {% render 'gift-guide-popup' %}
 </section>
+
+<script src="{{ 'gift-guide.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

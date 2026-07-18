@@ -1,21 +1,51 @@
 {%- comment -%}
   ============================================================================
-  Gift Guide — Product JSON  (helper, rendered once per grid cell)
+  Gift Guide — Product JSON  (helper, one per grid cell)
   ----------------------------------------------------------------------------
   Serialises a single product into a <script type="application/json"> blob the
-  popup reads on open. Emitting a curated payload (rather than the full product
-  object) keeps the DOM lean and the JS simple.
+  popup reads on open. A curated payload (not the full product object) keeps the
+  DOM lean and the JS simple. Everything is dynamic — nothing hardcoded.
 
-  Usage (Phase 5):
-    {% render 'gift-guide-product-json', product: block.settings.product %}
+  Expects:
+    product  - a product object (block.settings.product)
 
-  Planned payload: id, title, url, description, featured_image, options,
-  and variants[{ id, title, options, available, price }].
+  Options are emitted in position order so JS can match a variant by option
+  NAME (index in the array = option position - 1), never by fixed position.
 
   PHASE STATUS
-    [x] Phase 1  scaffold (this file, current)
-    [ ] Phase 5  JSON payload
+    [x] Phase 5  payload (this file, current)
   ============================================================================
 {%- endcomment -%}
 
-{%- comment -%} TODO Phase 5: emit product JSON payload. {%- endcomment -%}
+{%- if product != blank -%}
+  <script type="application/json" class="gg-product-json" data-product-id="{{ product.id }}">
+    {
+      "id": {{ product.id | json }},
+      "title": {{ product.title | json }},
+      "url": {{ product.url | json }},
+      "description": {{ product.description | json }},
+      "image": {%- if product.featured_image != blank -%}{{ product.featured_image | image_url: width: 600 | json }}{%- else -%}null{%- endif -%},
+      "price": {{ product.price | money | json }},
+      "options": [
+        {%- for option in product.options_with_values -%}
+          {
+            "name": {{ option.name | json }},
+            "position": {{ option.position | json }},
+            "values": {{ option.values | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ],
+      "variants": [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id | json }},
+            "title": {{ variant.title | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ variant.price | money | json }},
+            "options": {{ variant.options | json }}
+          }{%- unless forloop.last -%},{%- endunless -%}
+        {%- endfor -%}
+      ]
+    }
+  </script>
+{%- endif -%}

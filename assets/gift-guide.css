@@ -307,6 +307,208 @@
 }
 
 /* 4. Popup --------------------------------------------------------------- */
+/* Root is fixed + centered; `hidden` keeps it out of view until JS opens it. */
+.gg-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.gg-popup[hidden] {
+  display: none;
+}
+
+.gg-popup *,
+.gg-popup *::before,
+.gg-popup *::after {
+  box-sizing: border-box;
+}
+
+.gg-popup__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.gg-popup__dialog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;         /* TODO confirm Figma width */
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 26px;
+  background: var(--gg-white);
+  font-family: var(--gg-font-body);
+}
+
+.gg-popup__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: var(--gg-black);
+  cursor: pointer;
+}
+
+.gg-popup__close svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Header: thumbnail + title/price/description */
+.gg-popup__header {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 22px;
+  padding-right: 24px;      /* clear the close button */
+}
+
+.gg-popup__image {
+  flex: none;
+  width: 120px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.gg-popup__title {
+  margin: 0 0 8px;
+  font-family: var(--gg-font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.gg-popup__price {
+  margin: 0 0 10px;
+  font-size: 17px;
+}
+
+.gg-popup__desc {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.gg-popup__desc :where(p) {
+  margin: 0;
+}
+
+/* Option groups */
+.gg-popup__option {
+  margin-bottom: 18px;
+}
+
+.gg-popup__option[hidden] {
+  display: none;
+}
+
+.gg-popup__option-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Color: equal segments in one row (buttons injected by JS). */
+.gg-popup__swatches {
+  display: flex;
+}
+
+.gg-popup__swatch {
+  flex: 1;
+  padding: 16px 12px;
+  border: 1px solid var(--gg-black);
+  background: var(--gg-white);
+  color: var(--gg-black);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gg-popup__swatch + .gg-popup__swatch {
+  border-left: none;
+}
+
+/* Selected color gets an accent bar, matching the Figma popup. */
+.gg-popup__swatch[aria-checked="true"] {
+  box-shadow: inset 4px 0 0 var(--gg-yellow);
+  font-weight: 600;
+}
+
+.gg-popup__swatch:focus-visible {
+  outline: 2px solid var(--gg-black);
+  outline-offset: -4px;
+}
+
+/* Size: custom listbox */
+.gg-popup__select {
+  position: relative;
+}
+
+.gg-popup__select-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--gg-black);
+  background: var(--gg-white);
+  color: var(--gg-black);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gg-popup__chevron {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.gg-popup__select-toggle[aria-expanded="true"] .gg-popup__chevron {
+  transform: rotate(180deg);
+}
+
+.gg-popup__select-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--gg-black);
+  border-top: none;
+}
+
+.gg-popup__select-list[hidden] {
+  display: none;
+}
+
+.gg-popup__select-option {
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gg-popup__select-option:hover,
+.gg-popup__select-option[aria-selected="true"] {
+  background: #f2f2f2;
+}
+
+/* Add to cart — full-width dark button */
+.gg-popup__add {
+  width: 100%;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gg-popup__chevron {
+    transition: none;
+  }
+}
 
 /* 5. Responsive ---------------------------------------------------------- */
 /* Tablet (<=989px): keep the desktop overlay, just ease the scale so the

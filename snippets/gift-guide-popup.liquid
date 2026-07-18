@@ -2,16 +2,91 @@
   ============================================================================
   Gift Guide — Popup shell  (shared, rendered once by the grid section)
   ----------------------------------------------------------------------------
-  A single hidden dialog reused for every product. It contains only the static
-  structure (image, title, price, description, color swatches, size select,
-  add-to-cart). JavaScript injects the selected product's content on open.
+  A single hidden dialog reused for every product. Contains only static
+  structure; JavaScript (Phase 6+) injects the selected product's content via
+  the data-* hooks and manages open/close + focus.
 
-  Accessibility: role="dialog", aria-modal, focus trap, Esc / overlay to close.
+  Content is dynamic:
+    - image / title / price / description  -> filled from the product JSON
+    - option labels (e.g. "Color", "Size") -> filled from the product's options
+    - swatches / size list / variants      -> injected from the product JSON
+
+  Accessibility:
+    - role="dialog" + aria-modal on the dialog
+    - labelled by the title, described by the description
+    - focusable dialog (tabindex="-1"); JS traps focus + restores it on close
+    - color = radiogroup, size = listbox (ARIA), both keyboard-driven in JS
 
   PHASE STATUS
-    [x] Phase 1  scaffold (this file, current)
-    [ ] Phase 5  dialog markup + a11y hooks
+    [x] Phase 5  markup + a11y hooks (this file, current)
+    [ ] Phase 6  JS populates + keyboard
   ============================================================================
 {%- endcomment -%}
 
-{%- comment -%} TODO Phase 5: popup dialog markup. {%- endcomment -%}
+<div class="gg-popup" data-gg-popup hidden>
+  {%- comment -%} Click-to-dismiss backdrop. {%- endcomment -%}
+  <div class="gg-popup__overlay" data-gg-popup-overlay></div>
+
+  <div
+    class="gg-popup__dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="gg-popup-title"
+    aria-describedby="gg-popup-desc"
+    tabindex="-1"
+    data-gg-popup-dialog
+  >
+    {%- comment -%} JS focuses this first, and returns focus to the trigger on close. {%- endcomment -%}
+    <button type="button" class="gg-popup__close" data-gg-popup-close aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div class="gg-popup__header">
+      <div class="gg-popup__media">
+        <img class="gg-popup__image" data-gg-popup-image src="" alt="" width="120" height="150">
+      </div>
+
+      <div class="gg-popup__intro">
+        <h2 class="gg-popup__title" id="gg-popup-title" data-gg-popup-title></h2>
+        <p class="gg-popup__price" data-gg-popup-price></p>
+        <div class="gg-popup__desc" id="gg-popup-desc" data-gg-popup-description></div>
+      </div>
+    </div>
+
+    {%- comment -%} Color — swatches injected by JS; label = option name. {%- endcomment -%}
+    <div class="gg-popup__option" data-gg-popup-color hidden>
+      <span class="gg-popup__option-label" data-gg-popup-color-label></span>
+      <div class="gg-popup__swatches" data-gg-popup-color-values role="radiogroup"></div>
+    </div>
+
+    {%- comment -%} Size — custom listbox; options injected by JS; label = option name. {%- endcomment -%}
+    <div class="gg-popup__option" data-gg-popup-size hidden>
+      <span class="gg-popup__option-label" data-gg-popup-size-label></span>
+      <div class="gg-popup__select">
+        <button
+          type="button"
+          class="gg-popup__select-toggle"
+          data-gg-popup-size-toggle
+          aria-haspopup="listbox"
+          aria-expanded="false"
+        >
+          <span data-gg-popup-size-current>Choose your size</span>
+          <svg class="gg-popup__chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <ul class="gg-popup__select-list" data-gg-popup-size-values role="listbox" hidden></ul>
+      </div>
+    </div>
+
+    {%- comment -%} Add to cart — wired in Phase 7. {%- endcomment -%}
+    <button type="button" class="gg-popup__add gg-btn gg-btn--dark" data-gg-popup-add>
+      <span>ADD TO CART</span>
+      <svg class="gg-arrow" viewBox="0 0 42 14" fill="none" aria-hidden="true" focusable="false">
+        <path d="M0 7h39M33 1l7 6-7 6" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+    </button>
+  </div>
+</div>

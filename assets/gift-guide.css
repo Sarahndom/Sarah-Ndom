@@ -79,19 +79,13 @@
    right height at any width and prevents an empty gap. */
 .gg-banner__hero {
   position: relative;
-  aspect-ratio: 1.9;          /* tall hero so the copy sits low-left like Figma */
-  overflow: hidden;
   background: var(--gg-white);
 }
 
-/* Anchor the art to the left so the dense cameras shift right, off the text. */
 .gg-banner__illustration {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: left center;
+  height: auto;
 }
 
 .gg-banner__content {

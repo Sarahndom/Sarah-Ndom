@@ -578,7 +578,7 @@
     font-size: 12px;
   }
 
-  /* Hero: stack — copy first on white, illustration as a band below. */
+  /* Hero: centered copy on white, illustration band below, SHOP NOW over it. */
   .gg-banner__hero {
     aspect-ratio: auto;
     overflow: visible;
@@ -589,25 +589,34 @@
     position: static;
     order: 2;
     width: 100%;
-    height: auto;
+    height: 230px;
+    object-fit: cover;
+    object-position: center;
   }
   .gg-banner__content {
     position: static;
     order: 1;
     max-width: none;
-    padding: 30px 24px 26px;
+    padding: 30px 24px 14px;
+    text-align: center;
+    align-items: center;                    /* center heading + description */
   }
   .gg-banner__heading {
     font-size: clamp(34px, 10vw, 44px);
-    margin-bottom: 16px;
-    white-space: normal;                   /* allow wrap on small screens */
+    margin-bottom: 14px;
+    white-space: normal;
   }
   .gg-banner__desc {
     max-width: none;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     font-size: 15px;
   }
-  .gg-btn--dark {
+  /* SHOP NOW overlaps the illustration lower-left, like the Figma mobile. */
+  .gg-banner__content .gg-btn--dark {
+    position: absolute;
+    left: 24px;
+    bottom: 50px;
+    margin: 0;
     padding: 15px 26px;
   }
 

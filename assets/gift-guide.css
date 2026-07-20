@@ -443,6 +443,12 @@
   font-weight: 700;
 }
 
+/* Black is the exception: when selected the whole box fills solid black. */
+.gg-popup__swatch--black[aria-checked="true"] {
+  background: var(--gg-black);
+  color: var(--gg-white);
+}
+
 .gg-popup__swatch:focus-visible {
   outline: 2px solid var(--gg-black);
   outline-offset: -4px;

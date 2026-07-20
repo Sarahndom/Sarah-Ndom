@@ -79,8 +79,13 @@
    right height at any width and prevents an empty gap. */
 .gg-banner__hero {
   position: relative;
-  aspect-ratio: 1440 / 560;
-  background: var(--gg-white) center / cover no-repeat;
+  background: var(--gg-white);
+}
+
+.gg-banner__illustration {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .gg-banner__content {
@@ -101,6 +106,7 @@
   line-height: 1;
   font-weight: 800;
   letter-spacing: -0.01em;
+  white-space: nowrap;                    /* keep "The Gift Guide" on one line */
 }
 
 .gg-banner__desc {
@@ -263,6 +269,7 @@
   background: rgba(255, 255, 255, 0.92);
   color: var(--gg-black);
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -570,18 +577,24 @@
     font-size: 12px;
   }
 
-  /* Hero: background stays; text overlays a taller area on phones. */
+  /* Hero: stack — copy first on white, illustration as a band below. */
   .gg-banner__hero {
-    aspect-ratio: auto;
-    min-height: 440px;
+    display: flex;
+    flex-direction: column;
+  }
+  .gg-banner__illustration {
+    order: 2;
   }
   .gg-banner__content {
+    position: static;
+    order: 1;
     max-width: none;
-    padding: 0 24px 32px;
+    padding: 30px 24px 26px;
   }
   .gg-banner__heading {
-    font-size: 40px;
+    font-size: clamp(34px, 10vw, 44px);
     margin-bottom: 16px;
+    white-space: normal;                   /* allow wrap on small screens */
   }
   .gg-banner__desc {
     max-width: none;

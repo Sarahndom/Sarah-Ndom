@@ -143,8 +143,6 @@
       var colorKey = value.toLowerCase().replace(/\s+/g, '');
       // Paint the left chip in the swatch's real colour (mapped, else the raw name).
       btn.style.setProperty('--gg-swatch-color', COLOR_MAP[colorKey] || colorKey);
-      // Black is special: when selected it fills solid black (handled in CSS).
-      if (colorKey === 'black') btn.classList.add('gg-popup__swatch--black');
       btn.addEventListener('click', function () { selectColor(value); });
       el.colorValues.appendChild(btn);
     });

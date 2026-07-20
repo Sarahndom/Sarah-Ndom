@@ -438,15 +438,11 @@
   border-left: none;
 }
 
-/* Selected swatch: bold label (the colour chip stays its own colour). */
+/* Selected swatch fills solid black with white text; its colour bar still shows. */
 .gg-popup__swatch[aria-checked="true"] {
-  font-weight: 700;
-}
-
-/* Black is the exception: when selected the whole box fills solid black. */
-.gg-popup__swatch--black[aria-checked="true"] {
   background: var(--gg-black);
   color: var(--gg-white);
+  font-weight: 700;
 }
 
 .gg-popup__swatch:focus-visible {

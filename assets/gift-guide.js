@@ -44,6 +44,14 @@
   const OPTION = 'gg-popup__select-option';
   const SIZE_PLACEHOLDER = 'Choose your size';
 
+  // Colour name -> chip colour, so each swatch shows its real colour.
+  const COLOR_MAP = {
+    black: '#000000', white: '#ffffff', grey: '#8a8a8a', gray: '#8a8a8a',
+    red: '#c0392b', blue: '#1f4fd8', navy: '#1f3a5f', green: '#2e9e5b',
+    brown: '#7a4a2b', beige: '#cdbb96', orange: '#e07b1a', yellow: '#e8c020',
+    pink: '#e0508f', purple: '#7a3fb0'
+  };
+
   let popup, dialog;          // popup root + focusable dialog
   let el = {};                // cached static popup elements (queried once)
   let lastFocused = null;     // element to restore focus to on close
@@ -133,8 +141,8 @@
       btn.setAttribute('aria-checked', 'false');
       btn.textContent = value;
       var colorKey = value.toLowerCase().replace(/\s+/g, '');
-      // Paint the left chip in the colour itself (CSS named colours: grey, blue, red…).
-      btn.style.setProperty('--gg-swatch-color', colorKey);
+      // Paint the left chip in the swatch's real colour (mapped, else the raw name).
+      btn.style.setProperty('--gg-swatch-color', COLOR_MAP[colorKey] || colorKey);
       // Black is special: when selected it fills solid black (handled in CSS).
       if (colorKey === 'black') btn.classList.add('gg-popup__swatch--black');
       btn.addEventListener('click', function () { selectColor(value); });

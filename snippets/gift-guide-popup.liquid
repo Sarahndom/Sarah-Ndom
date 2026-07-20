@@ -41,7 +41,7 @@
 
     <div class="gg-popup__header">
       <div class="gg-popup__media">
-        <img class="gg-popup__image" data-gg-popup-image src="" alt="" width="120" height="150">
+        <img class="gg-popup__image" data-gg-popup-image src="" alt="" width="112" height="112">
       </div>
 
       <div class="gg-popup__intro">
@@ -68,10 +68,12 @@
           aria-haspopup="listbox"
           aria-expanded="false"
         >
-          <span data-gg-popup-size-current>Choose your size</span>
-          <svg class="gg-popup__chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
+          <span class="gg-popup__select-label" data-gg-popup-size-current>Choose your size</span>
+          <span class="gg-popup__select-caret">
+            <svg class="gg-popup__chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
         </button>
         <ul class="gg-popup__select-list" data-gg-popup-size-values role="listbox" hidden></ul>
       </div>

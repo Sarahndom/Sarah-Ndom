@@ -132,8 +132,11 @@
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-checked', 'false');
       btn.textContent = value;
+      var colorKey = value.toLowerCase().replace(/\s+/g, '');
       // Paint the left chip in the colour itself (CSS named colours: grey, blue, red…).
-      btn.style.setProperty('--gg-swatch-color', value.toLowerCase().replace(/\s+/g, ''));
+      btn.style.setProperty('--gg-swatch-color', colorKey);
+      // Black is special: when selected it fills solid black (handled in CSS).
+      if (colorKey === 'black') btn.classList.add('gg-popup__swatch--black');
       btn.addEventListener('click', function () { selectColor(value); });
       el.colorValues.appendChild(btn);
     });

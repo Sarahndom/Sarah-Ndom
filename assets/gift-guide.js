@@ -132,6 +132,8 @@
       btn.setAttribute('role', 'radio');
       btn.setAttribute('aria-checked', 'false');
       btn.textContent = value;
+      // Paint the left chip in the colour itself (CSS named colours: grey, blue, red…).
+      btn.style.setProperty('--gg-swatch-color', value.toLowerCase().replace(/\s+/g, ''));
       btn.addEventListener('click', function () { selectColor(value); });
       el.colorValues.appendChild(btn);
     });

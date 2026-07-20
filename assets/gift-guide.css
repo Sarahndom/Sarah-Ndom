@@ -261,15 +261,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
+  width: 30px;
+  height: 30px;
   padding: 0;
   border: none;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
   color: var(--gg-black);
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
@@ -284,8 +284,8 @@
 }
 
 .gg-grid__add-icon {
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -421,12 +421,16 @@
 
 .gg-popup__swatch {
   flex: 1;
-  padding: 16px 12px;
+  padding: 16px 12px 16px 18px;
   border: 1px solid var(--gg-black);
   background: var(--gg-white);
   color: var(--gg-black);
   font-size: 14px;
+  text-align: left;
   cursor: pointer;
+  /* Left chip painted in the swatch's own colour (set per-swatch by JS).
+     White resolves to a white chip = invisible, exactly like the Figma. */
+  box-shadow: inset 5px 0 0 var(--gg-swatch-color, transparent);
   transition: box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease;
 }
 
@@ -434,10 +438,9 @@
   border-left: none;
 }
 
-/* Selected color gets a black accent bar, matching the Figma popup. */
+/* Selected swatch: bold label (the colour chip stays its own colour). */
 .gg-popup__swatch[aria-checked="true"] {
-  box-shadow: inset 4px 0 0 var(--gg-black);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .gg-popup__swatch:focus-visible {

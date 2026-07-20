@@ -23,12 +23,24 @@
 
 {{ 'gift-guide.css' | asset_url | stylesheet_tag }}
 
+{%- comment -%} Smart defaults so the page renders products out of the box:
+   the bonus falls back to the "Soft Winter Jacket" product, and any grid block
+   with no product picked falls back to a store product. Both stay fully
+   overridable per block in the Theme Editor. {%- endcomment -%}
+{%- liquid
+  assign bonus = section.settings.bonus_product
+  if bonus == blank
+    assign bonus = all_products['soft-winter-jacket']
+  endif
+  assign fallback_products = collections.all.products
+-%}
+
 <section
   class="gg-grid"
   data-gift-guide-grid
-  {%- if section.settings.bonus_product != blank %}
-    data-bonus-product-id="{{ section.settings.bonus_product.id }}"
-    data-bonus-variant-id="{{ section.settings.bonus_product.selected_or_first_available_variant.id }}"
+  {%- if bonus != blank %}
+    data-bonus-product-id="{{ bonus.id }}"
+    data-bonus-variant-id="{{ bonus.selected_or_first_available_variant.id }}"
   {%- endif %}
   {%- if section.settings.heading != blank %}
     aria-labelledby="gg-grid-heading-{{ section.id }}"
@@ -43,6 +55,9 @@
   <ul class="gg-grid__list" role="list">
     {%- for block in section.blocks -%}
       {%- assign product = block.settings.product -%}
+      {%- if product == blank -%}
+        {%- assign product = fallback_products[forloop.index0] -%}
+      {%- endif -%}
       <li class="gg-grid__item" {{ block.shopify_attributes }}>
         <div class="gg-grid__card">
           {%- if product != blank -%}

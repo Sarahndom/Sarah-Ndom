@@ -79,13 +79,18 @@
    right height at any width and prevents an empty gap. */
 .gg-banner__hero {
   position: relative;
+  aspect-ratio: 2.3;          /* taller than the raw art so the copy sits low-left like Figma */
+  overflow: hidden;
   background: var(--gg-white);
 }
 
 .gg-banner__illustration {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .gg-banner__content {
@@ -434,9 +439,9 @@
   border-left: none;
 }
 
-/* Selected color gets an accent bar, matching the Figma popup. */
+/* Selected color gets a black accent bar, matching the Figma popup. */
 .gg-popup__swatch[aria-checked="true"] {
-  box-shadow: inset 4px 0 0 var(--gg-yellow);
+  box-shadow: inset 4px 0 0 var(--gg-black);
   font-weight: 600;
 }
 
@@ -492,9 +497,10 @@
   cursor: pointer;
 }
 
-.gg-popup__select-option:hover,
+.gg-popup__select-option:not(.is-disabled):hover,
 .gg-popup__select-option[aria-selected="true"] {
-  background: #f2f2f2;
+  background: var(--gg-black);
+  color: var(--gg-white);
 }
 
 /* Sizes with no available variant for the chosen color. */
@@ -579,11 +585,16 @@
 
   /* Hero: stack — copy first on white, illustration as a band below. */
   .gg-banner__hero {
+    aspect-ratio: auto;
+    overflow: visible;
     display: flex;
     flex-direction: column;
   }
   .gg-banner__illustration {
+    position: static;
     order: 2;
+    width: 100%;
+    height: auto;
   }
   .gg-banner__content {
     position: static;

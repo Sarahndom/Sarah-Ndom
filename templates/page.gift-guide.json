@@ -7,12 +7,12 @@
     "grid": {
       "type": "gift-guide-grid",
       "blocks": {
-        "product_1": { "type": "product", "settings": {} },
-        "product_2": { "type": "product", "settings": {} },
-        "product_3": { "type": "product", "settings": {} },
-        "product_4": { "type": "product", "settings": {} },
-        "product_5": { "type": "product", "settings": {} },
-        "product_6": { "type": "product", "settings": {} }
+        "product_1": { "type": "product", "settings": { "hotspot_x": 60, "hotspot_y": 55 } },
+        "product_2": { "type": "product", "settings": { "hotspot_x": 68, "hotspot_y": 48 } },
+        "product_3": { "type": "product", "settings": { "hotspot_x": 58, "hotspot_y": 24 } },
+        "product_4": { "type": "product", "settings": { "hotspot_x": 42, "hotspot_y": 46 } },
+        "product_5": { "type": "product", "settings": { "hotspot_x": 52, "hotspot_y": 58 } },
+        "product_6": { "type": "product", "settings": { "hotspot_x": 70, "hotspot_y": 55 } }
       },
       "block_order": [
         "product_1",

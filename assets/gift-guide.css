@@ -614,10 +614,11 @@
     margin-bottom: 0;
     font-size: 15px;
   }
-  /* SHOP NOW overlaps the illustration lower-left, like the Figma mobile. */
+  /* SHOP NOW centered over the illustration, like the Figma mobile. */
   .gg-banner__content .gg-btn--dark {
     position: absolute;
-    left: 24px;
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 50px;
     margin: 0;
     padding: 15px 26px;
